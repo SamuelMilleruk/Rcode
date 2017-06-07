@@ -1,0 +1,50 @@
+# Human Prediction and Big Data Course using R
+# Week 2 Wikipedia Lesson
+
+#Installing RCurl package- 1st run only
+#install.packages("RCurl")
+
+#Now need to load package into R 
+library (RCurl)
+
+#Using getURL function from RCurl
+getURL("http://stats.grok.se/json/en/201410/Friday")
+
+#Turning raw data into a variable
+rawData <- getURL("http://stats.grok.se/json/en/201410/Friday")
+
+#now calling rawData to check that it's saved properly
+rawData
+
+#Installing another package to turn this data into a useable format- 1st time
+#install.packages("RJSONIO")
+
+#Now loading this package into R
+library(RJSONIO)
+
+#Using fromJSON function from RJSONIO with stored variable rawData to create a table
+fromJSON(rawData)
+
+# Creating another variable for our parsed data
+parsedData <- fromJSON(rawData)
+
+#Now focusing on the the daily views section
+parsedData$daily_views
+
+#Creating a dataframe out of parsedData$daily_views
+viewsData<- data.frame(Date=names(parsedData$daily_views), Views=parsedData$daily_views, row.names=NULL)
+
+#Putting the Date column in order- 1st- assigning date format to Date column and then ordering
+#assigning date format
+viewsData$Date <-as.Date(viewsData$Date)
+# Now reordering- so it is by date
+viewsData <- viewsData[order(viewsData$Date),]
+
+#installing ggplot2-1st itme only
+#install.packages("ggplot2")
+
+#loading ggplot to the current environment
+library(ggplot2)
+
+#Now building a graph of the daily views for October 2014
+ggplot(data=viewsData, aes(x=Date, y=Views, group=1)) +geom_line()
